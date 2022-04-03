@@ -57,7 +57,9 @@ class MnistTrainingFlow(FlowSpec):
             self.reshaped, self.classes, n_hidden=self.n_hidden, dropout=self.dropout
         )
         model.compile(
-            optimizer="SGD", loss="categorical_crossentropy", metrics=["accuracy"]
+            optimizer="SGD",
+            loss="categorical_crossentropy",
+            metrics=["accuracy"],
         )
         self.model = model
         """Compile the tensorflow model"""
@@ -66,6 +68,11 @@ class MnistTrainingFlow(FlowSpec):
     @step
     def train_model(self, inputs):
         """Training time"""
+        from tensorflow import keras
+
+        callbacks = []
+        callbacks.append(keras.callbacks.EarlyStopping(monitor="loss", patience=3))
+
         self.merge_artifacts(inputs)
         self.model.fit(
             self.X_train,
@@ -74,6 +81,7 @@ class MnistTrainingFlow(FlowSpec):
             batch_size=self.batch_size,
             verbose=self.verbose,
             validation_split=self.validation_split,
+            callbacks=callbacks,
         )
         self.next(self.test_model)
 

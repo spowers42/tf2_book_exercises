@@ -35,6 +35,7 @@ def get_multilayer_model(
             activation=activation_hidden,
         )
     )
+    model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(n_hidden, name="hidden_layer", activation=activation_hidden)
@@ -64,6 +65,7 @@ def get_larger_multilayer_model(
             activation=activation_hidden,
         )
     )
+    model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(n_hidden, name="hidden1", activation=activation_hidden)
