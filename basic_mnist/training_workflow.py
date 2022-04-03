@@ -10,12 +10,23 @@ class MnistTrainingFlow(FlowSpec):
         "split", help="training validation split percentage", default=0.2
     )
     n_hidden = Parameter("n_hidden", help="number of hidden layers to use", default=128)
+    dropout = Parameter("droput", help="dropout percentage", default=0.3)
+    optimizer = Parameter(
+        "optimizer", help="name of the optimizer to utilize for training", default="SGD"
+    )
 
     @step
     def start(self):
         """Start/setup"""
         self.reshaped = 28 * 28
         self.classes = 10
+
+        assert 0 <= self.dropout <= 1, "Dropout percentage must be between 0 and 1"
+        optimizers = ["SGD", "Adam", "RMSProp"]  # allowed optimizers
+        assert (
+            self.optimizer in optimizers
+        ), f"The optimizer specified is not allowed, try one of ${optimizers}"
+
         self.next(self.load_data, self.compile_model)
 
     @step
@@ -40,9 +51,11 @@ class MnistTrainingFlow(FlowSpec):
 
     @step
     def compile_model(self):
-        from models import get_larger_multilayer_model as model
+        from models import get_multilayer_model as model
 
-        model = model(self.reshaped, self.classes, n_hidden=self.n_hidden)
+        model = model(
+            self.reshaped, self.classes, n_hidden=self.n_hidden, dropout=self.dropout
+        )
         model.compile(
             optimizer="SGD", loss="categorical_crossentropy", metrics=["accuracy"]
         )

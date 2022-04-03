@@ -2,7 +2,7 @@ from tensorflow import keras
 
 
 def get_single_layer_model(
-    input_size: int, n_classes: int, activation: str = "softmax"
+    input_size: int, n_classes: int, activation: str = "softmax", **kwargs
 ) -> keras.models.Sequential:
     """create a simple single layer demo NN"""
     model = keras.models.Sequential()
@@ -21,6 +21,7 @@ def get_multilayer_model(
     input_size: int,
     n_classes: int,
     n_hidden: int,
+    dropout: float,
     activation_hidden: str = "relu",
     output_activation: str = "softmax",
 ) -> keras.models.Sequential:
@@ -34,9 +35,11 @@ def get_multilayer_model(
             activation=activation_hidden,
         )
     )
+    model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(n_hidden, name="hidden_layer", activation=activation_hidden)
     )
+    model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(n_classes, name="output_layer", activation=output_activation)
     )
@@ -47,6 +50,7 @@ def get_larger_multilayer_model(
     input_size: int,
     n_classes: int,
     n_hidden: int,
+    dropout: float,
     activation_hidden: str = "relu",
     activation_output: str = "softmax",
 ) -> keras.models.Sequential:
@@ -60,14 +64,17 @@ def get_larger_multilayer_model(
             activation=activation_hidden,
         )
     )
+    model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(n_hidden, name="hidden1", activation=activation_hidden)
     )
+    model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(
             int(n_hidden / 2), name="hidden2", activation=activation_hidden
         )
     )
+    model.add(keras.layers.Dropout(dropout))
     model.add(
         keras.layers.Dense(n_classes, name="output", activation=activation_output)
     )
