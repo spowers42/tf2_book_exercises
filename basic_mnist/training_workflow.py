@@ -1,6 +1,6 @@
 from metaflow import FlowSpec, step, Parameter, conda_base
 
-
+# uncomment when using conda to run remotely/on AWS
 # @conda_base(libraries={'tensorflow':'2.8.0'})
 class MnistTrainingFlow(FlowSpec):
     epochs = Parameter("epochs", help="training epochs", default=200)
@@ -40,11 +40,9 @@ class MnistTrainingFlow(FlowSpec):
 
     @step
     def compile_model(self):
-        from models import get_multilayer_model
+        from models import get_larger_multilayer_model as model
 
-        model = get_multilayer_model(
-            self.reshaped, self.classes, n_hidden=self.n_hidden
-        )
+        model = model(self.reshaped, self.classes, n_hidden=self.n_hidden)
         model.compile(
             optimizer="SGD", loss="categorical_crossentropy", metrics=["accuracy"]
         )
